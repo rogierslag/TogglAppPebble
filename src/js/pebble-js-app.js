@@ -10,7 +10,7 @@ function send(token,method,call,json) {
     xhr.open(method, "https://toggl.com/api/v8/"+call, false);
     xhr.setRequestHeader('Authorization',auth);
 	xhr.setRequestHeader('Content-type','application/json');
-	if ( json != null ) {
+	if ( json !== null ) {
 		xhr.setRequestHeader("Content-length", json.length);
 	}
     xhr.send(json);
@@ -38,17 +38,15 @@ function getTimer() {
     return result.data;
 }
 
-Pebble.addEventListener("ready",
-                        function(e) {
-                            console.log("JavaScript app ready and running!");
-                            var data = getTimer();
+function getCurrentTimer() {
+	var data = getTimer();
 							console.log(data);
 
 							if ( data ) {
 								Pebble.sendAppMessage({
 									"id": data.id,
 									"duration": data.duration,
-									"description": data.description,
+									 "description": data.description?data.description:"an unnamed task",
 									"start":"1"
 								});
 							} else {
@@ -59,18 +57,31 @@ Pebble.addEventListener("ready",
 									"start":"0"
 								});
 							}
-                            
+}
+
+Pebble.addEventListener("ready",
+                        function(e) {
+                            console.log("JavaScript app ready and running!");
+                            getCurrentTimer();
                         }
                         );
 
 Pebble.addEventListener("appmessage",
                         function(e) {
                             console.log("Received message: " + e.payload);
-                            if (e.type == 'start') {
-                                id = startTimer()
-                            } else if (e.type == 'stop' ) {
-                                stopTimer(id);
-                            }
+                            if (e.payload.start) {
+                                data = startTimer();
+								Pebble.sendAppMessage({
+									"id": data.id,
+									"duration": data.duration,
+									 "description": data.description?data.description:"an unnamed task",
+									"start":"1"
+								});
+							} else if (e.payload.stop ) {
+                                stopTimer(e.payload.id);
+							} else if (e.payload.get ) {
+								getCurrentTimer();
+							}
                         }
                         );
 

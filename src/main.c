@@ -1,12 +1,14 @@
 #include <pebble.h>
+#include <main.h>
 
 Window *my_window;
 TextLayer *content_layer;
 TextLayer *title_layer;
 ActionBarLayer* action_bar;
 
-uint32_t GcurrentTid;
+int GcurrentTid;
 uint32_t Gduration;
+struct tm *last_time;
 char *Gdescription;
 
 static const int TITLE_HEIGHT=50;
@@ -24,6 +26,21 @@ enum keys {
 	APPMESS_description
 };
 
+void registerSecondTimeUnit() {
+	tick_timer_service_subscribe(SECOND_UNIT ,updateCurrentTimer);
+}
+
+void setStartActionBar() {
+	action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, icon_start);
+ 	action_bar_layer_set_click_config_provider(action_bar, (ClickConfigProvider) start_click_config_provider);
+	action_bar_layer_clear_icon(action_bar, BUTTON_ID_DOWN);
+ }
+
+void setStopActionBar() {
+	action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, icon_stop);
+ 	action_bar_layer_set_click_config_provider(action_bar, (ClickConfigProvider) stop_click_config_provider);
+	action_bar_layer_clear_icon(action_bar, BUTTON_ID_UP);
+ }
 
 char* calculateDuration(struct tm *current_time, int duration) {
 	unsigned int unix_time;
@@ -42,42 +59,74 @@ char* calculateDuration(struct tm *current_time, int duration) {
     running_time = unix_time+duration;
 
 	static char buf[64] = "";
-	APP_LOG(APP_LOG_LEVEL_INFO, "unix time %u",unix_time);
-	APP_LOG(APP_LOG_LEVEL_INFO, "calculated %u",running_time);
 	
-	snprintf(buf, sizeof(buf), "%u:%02u:%02u", running_time/(60*60), (running_time/60)%60, running_time%60);
+	if (  running_time/(60*60) > 0 ) {
+		snprintf(buf, sizeof(buf), "%u:%02u:%02u", running_time/(60*60), (running_time/60)%60, running_time%60);
+	} else if ((running_time/60) > 0 ) {
+		snprintf(buf, sizeof(buf), "%u:%02u", (running_time/60)%60, running_time%60);
+	} else {
+		snprintf(buf, sizeof(buf), "%02u seconds", running_time%60);
+	}
+	
 	return buf;
 }
 
 void start() {
-	
+	DictionaryIterator *it;
+	app_message_outbox_begin(&it);
+	Tuplet p1 = TupletInteger(APPMESS_start, 1);
+
+	dict_write_tuplet(it, &p1);
+	app_message_outbox_send();
 }
 
 void stop(int id) {
-	
+	DictionaryIterator *it;
+	app_message_outbox_begin(&it);
+	Tuplet p1 = TupletInteger(APPMESS_stop, 1);
+	Tuplet p2 = TupletInteger(APPMESS_id, GcurrentTid);
+
+	dict_write_tuplet(it, &p1);
+	dict_write_tuplet(it, &p2);
+	app_message_outbox_send();
 }
 
 void get() {
-	
+	DictionaryIterator *it;
+	app_message_outbox_begin(&it);
+	Tuplet p1 = TupletInteger(APPMESS_get, 1);
+
+	dict_write_tuplet(it, &p1);
+	app_message_outbox_send();
 }
 
 void start_handler(ClickRecognizerRef recognizer, void *context) {
-	text_layer_set_text(content_layer, "timer was started");
+	start();
+    text_layer_set_text(content_layer, "Timer is being started");
+	setStartActionBar();
 }
 
 void stop_handler(ClickRecognizerRef recognizer, void *context) {
-	text_layer_set_text(content_layer, "timer was stopped");
+	stop(GcurrentTid);
+	tick_timer_service_unsubscribe();
+	static char buf[64] = "";
+	snprintf(buf, sizeof(buf), "Your timer for '%s' was stopped after %s", Gdescription, calculateDuration(last_time,Gduration));
+    text_layer_set_text(content_layer, buf);
+	setStartActionBar();
 }
 
-static void click_config_provider(void *context) {
-  window_single_click_subscribe(BUTTON_ID_UP, start_handler);
-  window_single_click_subscribe(BUTTON_ID_DOWN, stop_handler);
+void stop_click_config_provider(void *context) {
+	window_single_click_subscribe(BUTTON_ID_DOWN, stop_handler);
+}
+
+void start_click_config_provider(void *context) {
+	window_single_click_subscribe(BUTTON_ID_UP, start_handler);
 }
 
 void my_window_load(Window *window) {
 	Layer *window_layer = window_get_root_layer(window);
 	GRect bounds = layer_get_frame(window_layer);
-	GRect content_layer_bounds = GRect(3,bounds.origin.y+TITLE_HEIGHT,bounds.size.w-ACTION_BAR_WIDTH-10-3,bounds.size.h-TITLE_HEIGHT);
+	GRect content_layer_bounds = GRect(3,bounds.origin.y+TITLE_HEIGHT,bounds.size.w-ACTION_BAR_WIDTH-10-3,bounds.size.h-TITLE_HEIGHT+10);
 	
 	title_layer = text_layer_create(GRect(0,0,bounds.size.w-ACTION_BAR_WIDTH-10,TITLE_HEIGHT));
 	text_layer_set_background_color(title_layer, GColorWhite);
@@ -97,9 +146,7 @@ void my_window_load(Window *window) {
     icon_stop = gbitmap_create_with_resource (RESOURCE_ID_ICON_STOP_BLACK);
 	
 	action_bar = action_bar_layer_create();
-  	// Associate the action bar with the window:
- 	action_bar_layer_set_click_config_provider(action_bar, (ClickConfigProvider) click_config_provider);
-	
+  	
 	action_bar_layer_add_to_window(action_bar, window);
  	layer_add_child(window_layer, text_layer_get_layer(title_layer));
 	layer_add_child(window_layer, text_layer_get_layer(content_layer));
@@ -107,11 +154,9 @@ void my_window_load(Window *window) {
 
 void updateCurrentTimer(struct tm *tick_time, TimeUnits units_changed) {
 	static char buf[64] = "";
-
-	snprintf(buf, sizeof(buf), "A timer for %s is running for %s", Gdescription, calculateDuration(tick_time,Gduration));
+	last_time = tick_time;
+	snprintf(buf, sizeof(buf), "A timer for '%s' is running for %s", Gdescription, calculateDuration(tick_time,Gduration));
     text_layer_set_text(content_layer, buf);
-
-	APP_LOG(APP_LOG_LEVEL_INFO, buf);
 }
 
 
@@ -119,7 +164,7 @@ void updateSysCurrentTimer(Tuple *id, Tuple *duration, Tuple *description) {
 	// Discover the current timer and display the duration and description
 	// If no timer is present, offer the possibility to start a new one
 	// Other wise offer the possibility to stop the current timer
-	int idValue = id->value->uint32;
+	int idValue = id->value->int32;
 	int durationValue = duration->value->uint32;
 	char *descValue = description->value->cstring;
 	
@@ -128,7 +173,7 @@ void updateSysCurrentTimer(Tuple *id, Tuple *duration, Tuple *description) {
 	Gdescription = descValue;
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "Id is %d and duration is %d",idValue,durationValue);
 	
-	tick_timer_service_subscribe(SECOND_UNIT ,updateCurrentTimer);
+	registerSecondTimeUnit();
 }
 
 void my_window_unload(Window *window) {
@@ -151,14 +196,15 @@ void in_received_handler(DictionaryIterator *it, void *context) {
 			Tuple *duration = dict_find(it,APPMESS_duration);
 			Tuple *description = dict_find(it,APPMESS_description);
 			updateSysCurrentTimer(id,duration,description);
-			action_bar_layer_set_icon(action_bar, BUTTON_ID_DOWN, icon_stop);
+			setStopActionBar();
 		} else {
 			APP_LOG(APP_LOG_LEVEL_INFO, "Goodie I received not a timer at all!");
+			tick_timer_service_unsubscribe();
+			setStartActionBar();
 			text_layer_set_text(content_layer, "No timer is currently running");
-			action_bar_layer_set_icon(action_bar, BUTTON_ID_UP, icon_start);
 		}
 	}
-		
+	APP_LOG(APP_LOG_LEVEL_DEBUG, "Finished inhandler");
 }
 
 void in_dropped_handler(AppMessageResult reason, void *context) {
@@ -173,6 +219,10 @@ void out_failed_handler(DictionaryIterator *it, AppMessageResult reasion, void *
 	APP_LOG(APP_LOG_LEVEL_WARNING, "Something was sent incorrectly");
 }
 
+void accel_tap_handler(AccelAxisType axis, int32_t direction) {
+	get();
+	text_layer_set_text(content_layer, "Fetching newest data from Toggl... Hang on");
+}
 
 void handle_init(void) {
 	my_window = window_create();
@@ -189,6 +239,8 @@ void handle_init(void) {
 	
 	app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
     
+	accel_tap_service_subscribe(&accel_tap_handler);
+	
 	window_stack_push(my_window, true);
 }
 
