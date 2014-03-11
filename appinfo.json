@@ -2,9 +2,12 @@
     "versionLabel": "1.0",
     "uuid": "5354f8f8-db7b-4f71-8eff-bc9cfb927884",
     "appKeys": {
-        "start": 0,
+        "description": 5,
+        "get": 2,
         "stop": 1,
-        "get": 2
+        "start": 0,
+        "duration": 4,
+        "id": 3
     },
     "longName": "ToggleApp",
     "versionCode": 1,
@@ -20,13 +23,13 @@
         "media": [
             {
                 "type": "png-trans",
-                "name": "ICON_STOP",
-                "file": "images/stop.png"
+                "name": "ICON_START",
+                "file": "images/start.png"
             },
             {
                 "type": "png-trans",
-                "name": "ICON_START",
-                "file": "images/start.png"
+                "name": "ICON_STOP",
+                "file": "images/stop.png"
             }
         ]
     }
