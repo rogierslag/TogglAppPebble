@@ -20,13 +20,13 @@
         "media": [
             {
                 "type": "png-trans",
-                "name": "ICON_START",
-                "file": "images/start.png"
+                "name": "ICON_STOP",
+                "file": "images/stop.png"
             },
             {
                 "type": "png-trans",
-                "name": "ICON_STOP",
-                "file": "images/stop.png"
+                "name": "ICON_START",
+                "file": "images/start.png"
             }
         ]
     }
