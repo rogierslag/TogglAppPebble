@@ -6,6 +6,7 @@
         "get": 2,
         "stop": 1,
         "start": 0,
+        "offset": 6,
         "duration": 4,
         "id": 3
     },
@@ -23,13 +24,13 @@
         "media": [
             {
                 "type": "png-trans",
-                "name": "ICON_START",
-                "file": "images/start.png"
+                "name": "ICON_STOP",
+                "file": "images/stop.png"
             },
             {
                 "type": "png-trans",
-                "name": "ICON_STOP",
-                "file": "images/stop.png"
+                "name": "ICON_START",
+                "file": "images/start.png"
             }
         ]
     }
