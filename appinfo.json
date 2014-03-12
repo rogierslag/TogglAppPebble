@@ -12,7 +12,7 @@
     "longName": "ToggleApp",
     "versionCode": 1,
     "capabilities": [
-        ""
+        "configurable"
     ],
     "shortName": "ToggleApp",
     "companyName": "rogier.slag@gmail.com",
