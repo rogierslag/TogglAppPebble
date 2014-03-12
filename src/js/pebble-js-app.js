@@ -61,6 +61,9 @@ Pebble.addEventListener("ready",
                         function(e) {
                             console.log("JavaScript app ready and running!");
 							token = localStorage.getItem("token");
+							Pebble.sendAppMessage({
+									"offset": parseInt(localStorage.getItem("offset"))
+								});
 							if(token){
 								getCurrentTimer();
 							}else{
