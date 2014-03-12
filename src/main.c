@@ -12,7 +12,7 @@ struct tm *last_time;
 char *Gdescription;
 
 static const int TITLE_HEIGHT=50;
-static const int TIME_ZONE_OFFSET=1;
+static int TIME_ZONE_OFFSET=0;
 
 GBitmap *icon_start;
 GBitmap *icon_stop;
@@ -23,7 +23,8 @@ enum keys {
 	APPMESS_get,
 	APPMESS_id,
 	APPMESS_duration,
-	APPMESS_description
+	APPMESS_description,
+	APPMESS_offset
 };
 
 void registerSecondTimeUnit() {
@@ -189,6 +190,7 @@ void handle_deinit(void) {
 void in_received_handler(DictionaryIterator *it, void *context) {
 	APP_LOG(APP_LOG_LEVEL_INFO, "Goodie I received somethingy!");	
 	Tuple *currentTimer = dict_find(it,APPMESS_start);
+	Tuple *timezoneOffset = dict_find(it,APPMESS_offset);
 	if ( currentTimer) {
 		if ( strcmp(currentTimer->value->cstring,"1") == 0)  {
 			APP_LOG(APP_LOG_LEVEL_INFO, "Goodie I received a running timer");	
@@ -203,6 +205,9 @@ void in_received_handler(DictionaryIterator *it, void *context) {
 			setStartActionBar();
 			text_layer_set_text(content_layer, "No timer is currently running");
 		}
+	} else if ( timezoneOffset ) {
+		TIME_ZONE_OFFSET = timezoneOffset->value->int32;
+		APP_LOG(APP_LOG_LEVEL_INFO,"Timezone offset set! %d",TIME_ZONE_OFFSET);
 	}
 	APP_LOG(APP_LOG_LEVEL_DEBUG, "Finished inhandler");
 }
