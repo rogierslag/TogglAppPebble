@@ -1,9 +1,7 @@
-var id = localStorage.getItem("lastId");
-//var token = localStorage.getItem("token");
-var token = "e7d2ad36d546dd60702083029c03a9b6";
+
+var token;
 
 function send(token,method,call,json) {
-	token = 'e7d2ad36d546dd60702083029c03a9b6';
     var xhr = new XMLHttpRequest();
     var auth = "Basic "+base64.encode(token+':api_token');
 	console.log(auth);
@@ -22,7 +20,7 @@ function send(token,method,call,json) {
 function startTimer() {
 	var data = {};
 	data.time_entry = {};
-    data.time_entry.description = "Pebble initiated timer";
+    data.time_entry.description = localStorage.getItem("desc");
     var json = JSON.stringify(data);
     var result = send(token,"POST","time_entries/start",json);
     return result.data;
@@ -62,7 +60,13 @@ function getCurrentTimer() {
 Pebble.addEventListener("ready",
                         function(e) {
                             console.log("JavaScript app ready and running!");
-                            getCurrentTimer();
+							token = localStorage.getItem("token");
+							if(token){
+								getCurrentTimer();
+							}else{
+								console.log('No token')
+							}
+                            	
                         }
                         );
 
@@ -84,6 +88,35 @@ Pebble.addEventListener("appmessage",
 							}
                         }
                         );
+Pebble.addEventListener("showConfiguration", function (e) {
+
+	var token = localStorage.getItem('token');
+	var desc = localStorage.getItem('desc');
+	var offset = localStorage.getItem('offset');
+	if(!token){
+		token=""
+	}
+	if(!desc){
+		desc=""
+	}
+	if(!offset){
+		offset=""
+	}
+	var urlVars = "token="+token+"&desc="+desc+"&offset="+offset;
+	console.log("http://klmz.nl/pebbletoggl/settings.html?"+encodeURI(urlVars));
+    Pebble.openURL("http://klmz.nl/pebbletoggl/settings.html?"+encodeURI(urlVars));
+});
+
+Pebble.addEventListener("webviewclosed", function(e) {
+	var response = decodeURIComponent(e.response);
+    var settings = JSON.parse(response);
+	localStorage.setItem("token", settings.apikey);
+	localStorage.setItem("desc", settings.desc);
+	localStorage.setItem("offset", settings.offset);
+
+	console.log(e.response);
+});
+
 
 				  
 				  /** LIBRARY **/
