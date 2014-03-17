@@ -6,7 +6,6 @@
         "get": 2,
         "stop": 1,
         "start": 0,
-        "offset": 6,
         "duration": 4,
         "id": 3
     },
@@ -15,7 +14,7 @@
     "capabilities": [
         "configurable"
     ],
-    "shortName": "Toggle",
+    "shortName": "ToggleApp",
     "companyName": "rogier.slag@gmail.com",
     "watchapp": {
         "watchface": false
@@ -23,10 +22,9 @@
     "resources": {
         "media": [
             {
-                "menuIcon": true,
-                "type": "png",
-                "name": "ICON_MENU",
-                "file": "images/toggl.png"
+                "type": "png-trans",
+                "name": "ICON_START",
+                "file": "images/start.png"
             },
             {
                 "type": "png-trans",
@@ -34,9 +32,10 @@
                 "file": "images/stop.png"
             },
             {
-                "type": "png-trans",
-                "name": "ICON_START",
-                "file": "images/start.png"
+                "menuIcon": true,
+                "type": "png",
+                "name": "ICON_MENU",
+                "file": "images/toggl.png"
             }
         ]
     }
