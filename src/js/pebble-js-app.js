@@ -1,21 +1,28 @@
 
 var token;
-
+function tokenIsSet(){
+	return token != "undefined" && token != null && token != ""
+}
 function send(token,method,call,json) {
-    var xhr = new XMLHttpRequest();
-	console.log("Send token"+token);
-    var auth = "Basic "+base64.encode(token+':api_token');
-	console.log(auth);
-    xhr.open(method, "https://toggl.com/api/v8/"+call, false);
-    xhr.setRequestHeader('Authorization',auth);
-	xhr.setRequestHeader('Content-type','application/json');
-	if ( json !== null ) {
-		xhr.setRequestHeader("Content-length", json.length);
+	if(tokenIsSet()){
+		var xhr = new XMLHttpRequest();
+		console.log("Send token"+token);
+		var auth = "Basic "+base64.encode(token+':api_token');
+		console.log(auth);
+		xhr.open(method, "https://toggl.com/api/v8/"+call, false);
+		xhr.setRequestHeader('Authorization',auth);
+		xhr.setRequestHeader('Content-type','application/json');
+		if ( json !== null ) {
+			xhr.setRequestHeader("Content-length", json.length);
+		}
+		xhr.send(json);
+		console.log(xhr.status);
+		console.log(xhr.responseText);
+		return JSON.parse(xhr.responseText);
+	}else{
+		console.log('no token');
+		return JSON.parse("{error: 'no token'}");
 	}
-    xhr.send(json);
-	console.log(xhr.status);
-	console.log(xhr.responseText);
-	return JSON.parse(xhr.responseText);
 }
 
 function startTimer() {
@@ -65,7 +72,7 @@ Pebble.addEventListener("ready",
 							Pebble.sendAppMessage({
 									"offset": parseInt(localStorage.getItem("offset"))
 								});
-							if(token != "undefined"){
+							if(tokenIsSet()){
 								getCurrentTimer();
 							}else{
 								console.log('No token')
@@ -97,7 +104,8 @@ Pebble.addEventListener("showConfiguration", function (e) {
 	var token = localStorage.getItem('token');
 	var desc = localStorage.getItem('desc');
 	var offset = localStorage.getItem('offset');
-	if(token != "undefined" && desc != "undefined" && offset != "undefined"){
+	if(tokenIsSet() && desc != "undefined" && offset != "undefined" 
+	    && desc != null && offset != null){
 		var urlVars = "token="+token+"&desc="+desc+"&offset="+offset;	
 		console.log("http://klmz.nl/pebbletoggl/settings.html?"+encodeURI(urlVars));
    		Pebble.openURL("http://klmz.nl/pebbletoggl/settings.html?"+encodeURI(urlVars));	
@@ -110,10 +118,22 @@ Pebble.addEventListener("showConfiguration", function (e) {
 Pebble.addEventListener("webviewclosed", function(e) {
 	var response = decodeURIComponent(e.response);
     var settings = JSON.parse(response);
-	localStorage.setItem("token", settings.apikey);
-	localStorage.setItem("desc", settings.desc);
-	localStorage.setItem("offset", settings.offset);
-    token = localStorage.getItem("token");
+	if(settings.token){
+		localStorage.setItem("token", settings.token);
+		token = localStorage.getItem("token");
+	}
+	
+	if(settings.desc){
+		localStorage.setItem("desc", settings.desc);
+	}
+	
+	if(settings.offset){
+		localStorage.setItem("offset", settings.offset);
+		Pebble.sendAppMessage({
+									"offset": parseInt(localStorage.getItem("offset"))
+								});
+    }
+	
 	console.log(e.response);
 });
 

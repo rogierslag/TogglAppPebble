@@ -1,16 +1,17 @@
 {
-    "versionLabel": "1.0",
+    "versionLabel": "1.0.2",
     "uuid": "5354f8f8-db7b-4f71-8eff-bc9cfb927884",
     "appKeys": {
         "description": 5,
         "get": 2,
         "stop": 1,
         "start": 0,
+        "offset": 6,
         "duration": 4,
         "id": 3
     },
     "longName": "ToggleApp",
-    "versionCode": 1,
+    "versionCode": 3,
     "capabilities": [
         "configurable"
     ],

@@ -58,7 +58,7 @@ char* calculateDuration(struct tm *current_time, int duration) {
               + ((current_time->tm_year+299)/400)*86400; /* add a leap day back every 400 years, starting in 2001*/
 
     running_time = unix_time+duration;
-
+	
 	static char buf[64] = "";
 	
 	if (  running_time/(60*60) > 0 ) {
