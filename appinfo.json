@@ -1,43 +1,44 @@
 {
-    "versionLabel": "1.0.2",
-    "uuid": "5354f8f8-db7b-4f71-8eff-bc9cfb927884",
     "appKeys": {
         "description": 5,
-        "get": 2,
-        "stop": 1,
-        "start": 0,
-        "offset": 6,
         "duration": 4,
-        "id": 3
+        "get": 2,
+        "id": 3,
+        "offset": 6,
+        "start": 0,
+        "stop": 1
     },
-    "longName": "ToggleApp",
-    "versionCode": 3,
     "capabilities": [
         "configurable"
     ],
-    "shortName": "ToggleApp",
     "companyName": "rogier.slag@gmail.com",
-    "watchapp": {
-        "watchface": false
-    },
+    "longName": "ToggleApp",
+    "projectType": "native",
     "resources": {
         "media": [
             {
-                "type": "png-trans",
-                "name": "ICON_START",
-                "file": "images/start.png"
-            },
-            {
-                "type": "png-trans",
-                "name": "ICON_STOP",
-                "file": "images/stop.png"
-            },
-            {
+                "file": "images/toggl.png",
                 "menuIcon": true,
-                "type": "png",
                 "name": "ICON_MENU",
-                "file": "images/toggl.png"
+                "type": "png"
+            },
+            {
+                "file": "images/stop.png",
+                "name": "ICON_STOP",
+                "type": "png-trans"
+            },
+            {
+                "file": "images/start.png",
+                "name": "ICON_START",
+                "type": "png-trans"
             }
         ]
+    },
+    "shortName": "ToggleApp",
+    "uuid": "5354f8f8-db7b-4f71-8eff-bc9cfb927884",
+    "versionCode": 3,
+    "versionLabel": "1.2",
+    "watchapp": {
+        "watchface": false
     }
 }
