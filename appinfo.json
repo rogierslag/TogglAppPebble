@@ -17,10 +17,9 @@
     "resources": {
         "media": [
             {
-                "file": "images/toggl.png",
-                "menuIcon": true,
-                "name": "ICON_MENU",
-                "type": "png"
+                "file": "images/start.png",
+                "name": "ICON_START",
+                "type": "png-trans"
             },
             {
                 "file": "images/stop.png",
@@ -28,15 +27,17 @@
                 "type": "png-trans"
             },
             {
-                "file": "images/start.png",
-                "name": "ICON_START",
-                "type": "png-trans"
+                "file": "images/toggl.png",
+                "menuIcon": true,
+                "name": "ICON_MENU",
+                "type": "png"
             }
         ]
     },
+    "sdkVersion": "2",
     "shortName": "ToggleApp",
     "uuid": "5354f8f8-db7b-4f71-8eff-bc9cfb927884",
-    "versionCode": 3,
+    "versionCode": 1,
     "versionLabel": "1.2",
     "watchapp": {
         "watchface": false
