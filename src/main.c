@@ -127,11 +127,17 @@ void start_click_config_provider(void *context) {
 void my_window_load(Window *window) {
 	Layer *window_layer = window_get_root_layer(window);
 	GRect bounds = layer_get_frame(window_layer);
-	GRect content_layer_bounds = GRect(3,bounds.origin.y+TITLE_HEIGHT,bounds.size.w-ACTION_BAR_WIDTH-10-3,bounds.size.h-TITLE_HEIGHT+10);
+	GRect content_layer_bounds = GRect(2,bounds.origin.y+TITLE_HEIGHT,bounds.size.w-ACTION_BAR_WIDTH-3,bounds.size.h-TITLE_HEIGHT+10);
 	
-	title_layer = text_layer_create(GRect(0,0,bounds.size.w-ACTION_BAR_WIDTH-10,TITLE_HEIGHT));
-	text_layer_set_background_color(title_layer, GColorWhite);
+	title_layer = text_layer_create(GRect(0,0,bounds.size.w-ACTION_BAR_WIDTH,TITLE_HEIGHT));
+#ifdef PBL_COLOR
+  text_layer_set_background_color(title_layer, GColorDarkCandyAppleRed);
+	text_layer_set_text_color(title_layer, GColorWhite);
+#else
+  text_layer_set_background_color(title_layer, GColorWhite);
 	text_layer_set_text_color(title_layer, GColorBlack);
+#endif
+  
 	text_layer_set_text_alignment(title_layer, GTextAlignmentCenter);
 	text_layer_set_font(title_layer, fonts_get_system_font(FONT_KEY_BITHAM_42_LIGHT));
 	text_layer_set_text(title_layer, "Toggl");
@@ -141,7 +147,7 @@ void my_window_load(Window *window) {
 	text_layer_set_text_color(content_layer, GColorBlack);
 	text_layer_set_text_alignment(content_layer, GTextAlignmentCenter);
 	text_layer_set_font(content_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
-	text_layer_set_text(content_layer, "time to Toggl!");
+	text_layer_set_text(content_layer, "Configure to start!");
 	
 	icon_start = gbitmap_create_with_resource (RESOURCE_ID_ICON_START_BLACK);
     icon_stop = gbitmap_create_with_resource (RESOURCE_ID_ICON_STOP_BLACK);
