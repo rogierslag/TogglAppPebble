@@ -29,6 +29,7 @@ function startTimer() {
 	var data = {};
 	data.time_entry = {};
     data.time_entry.description = localStorage.getItem("desc");
+	data.time_entry.created_with = "TogglAppPebble";
     var json = JSON.stringify(data);
     var result = send(token,"POST","time_entries/start",json);
     return result.data;
@@ -46,7 +47,7 @@ function getTimer() {
 
 function getCurrentTimer() {
 	var data = getTimer();
-							console.log(data);
+							console.log(JSON.stringify(data));
 
 							if ( data ) {
 								Pebble.sendAppMessage({
@@ -83,7 +84,7 @@ Pebble.addEventListener("ready",
 
 Pebble.addEventListener("appmessage",
                         function(e) {
-                            console.log("Received message: " + e.payload);
+                            console.log("Received message: " + JSON.stringify(e.payload));
                             if (e.payload.start) {
                                 data = startTimer();
 								Pebble.sendAppMessage({
@@ -134,7 +135,7 @@ Pebble.addEventListener("webviewclosed", function(e) {
 								});
     }
 	
-	console.log(e.response);
+	console.log(JSON.stringify(e.response));
 });
 
 

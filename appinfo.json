@@ -23,21 +23,25 @@
                 "type": "png"
             },
             {
-                "file": "images/stop.png",
-                "name": "ICON_STOP",
+                "file": "images/start.png",
+                "name": "ICON_START",
                 "type": "png-trans"
             },
             {
-                "file": "images/start.png",
-                "name": "ICON_START",
+                "file": "images/stop.png",
+                "name": "ICON_STOP",
                 "type": "png-trans"
             }
         ]
     },
+    "sdkVersion": "3",
     "shortName": "ToggleApp",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
     "uuid": "5354f8f8-db7b-4f71-8eff-bc9cfb927884",
-    "versionCode": 3,
-    "versionLabel": "1.2",
+    "versionLabel": "1.3",
     "watchapp": {
         "watchface": false
     }
