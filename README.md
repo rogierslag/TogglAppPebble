@@ -16,3 +16,7 @@ Just fork the repository and do a pull request if you think people could also be
 We both use [CloudPebble](https://cloudpebble.net/) for development. It's free and works quite well.
 
 Just link it with your GitHub account and you can directly start cloning this repository (or your fork). Don't forget to do a pull request for any changes you consider useful!
+
+## Contributors
+
+- [elonen](https://github.com/elonen)
